@@ -42,13 +42,35 @@ dumpSingleJson:true
 
 console.log(data);
 
-const videoUrl =
+let videoUrl = "";
 
-data.url ||
+if(data.formats){
 
-(data.formats &&
-data.formats[0] &&
-data.formats[0].url);
+const videoFormat = data.formats.find(
+
+f =>
+
+f.ext === "mp4" &&
+
+f.acodec !== "none" &&
+
+f.vcodec !== "none"
+
+);
+
+if(videoFormat){
+
+videoUrl = videoFormat.url;
+
+}
+
+}
+
+if(!videoUrl){
+
+videoUrl = data.url || "";
+
+}
 
 res.json({
 
