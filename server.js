@@ -1,13 +1,10 @@
 const express = require("express");
-
 const cors = require("cors");
-
 const ytdlp = require("yt-dlp-exec");
 
 const app = express();
 
 app.use(cors());
-
 app.use(express.json());
 
 app.get("/", (req,res)=>{
@@ -24,7 +21,8 @@ if(!url){
 
 return res.status(400).json({
 
-error:"No URL provided"
+success:false,
+error:"No URL"
 
 });
 
@@ -37,21 +35,20 @@ const data = await ytdlp(
 url,
 
 {
-
-dumpSingleJson:true,
-
-noWarnings:true,
-
-preferFreeFormats:true,
-
-addHeader:[
-"referer:instagram.com",
-"user-agent:googlebot"
-]
-
+dumpSingleJson:true
 }
 
 );
+
+console.log(data);
+
+const videoUrl =
+
+data.url ||
+
+(data.formats &&
+data.formats[0] &&
+data.formats[0].url);
 
 res.json({
 
@@ -59,17 +56,14 @@ success:true,
 
 title:
 data.title ||
-
 "Instagram Reel",
 
 thumbnail:
 data.thumbnail ||
-
 "https://via.placeholder.com/500",
 
 video:
-data.url ||
-
+videoUrl ||
 ""
 
 });
@@ -80,7 +74,10 @@ console.log(error);
 
 res.status(500).json({
 
-error:"Failed to fetch reel"
+success:false,
+
+error:
+"Instagram extraction failed"
 
 });
 
