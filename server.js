@@ -82,6 +82,9 @@ data.title ||
 
 thumbnail:
 data.thumbnail ||
+(data.thumbnails &&
+data.thumbnails[0] &&
+data.thumbnails[0].url) ||
 "https://via.placeholder.com/500",
 
 video:
