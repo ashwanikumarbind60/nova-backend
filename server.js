@@ -2,7 +2,7 @@ const express = require("express");
 
 const cors = require("cors");
 
-const { exec } = require("child_process");
+const ytdlp = require("yt-dlp-exec");
 
 const app = express();
 
@@ -16,7 +16,7 @@ res.send("Nova Backend Running");
 
 });
 
-app.post("/download",(req,res)=>{
+app.post("/download", async (req,res)=>{
 
 const url = req.body.url;
 
@@ -30,50 +30,61 @@ error:"No URL provided"
 
 }
 
-const command =
+try{
 
-`yt-dlp -j "${url}"`;
+const data = await ytdlp(
 
-exec(command,(error,stdout,stderr)=>{
+url,
 
-if(error){
+{
 
-return res.status(500).json({
+dumpSingleJson:true,
+
+noWarnings:true,
+
+preferFreeFormats:true,
+
+addHeader:[
+"referer:instagram.com",
+"user-agent:googlebot"
+]
+
+}
+
+);
+
+res.json({
+
+success:true,
+
+title:
+data.title ||
+
+"Instagram Reel",
+
+thumbnail:
+data.thumbnail ||
+
+"https://via.placeholder.com/500",
+
+video:
+data.url ||
+
+""
+
+});
+
+}catch(error){
+
+console.log(error);
+
+res.status(500).json({
 
 error:"Failed to fetch reel"
 
 });
 
 }
-
-try{
-
-const data =
-JSON.parse(stdout);
-
-res.json({
-
-success:true,
-
-title:data.title,
-
-thumbnail:data.thumbnail,
-
-video:data.url
-
-});
-
-}catch(e){
-
-res.status(500).json({
-
-error:"Invalid response"
-
-});
-
-}
-
-});
 
 });
 
