@@ -2,6 +2,8 @@ const express = require("express");
 
 const cors = require("cors");
 
+const { exec } = require("child_process");
+
 const app = express();
 
 app.use(cors());
@@ -28,17 +30,48 @@ error:"No URL provided"
 
 }
 
+const command =
+
+`yt-dlp -j "${url}"`;
+
+exec(command,(error,stdout,stderr)=>{
+
+if(error){
+
+return res.status(500).json({
+
+error:"Failed to fetch reel"
+
+});
+
+}
+
+try{
+
+const data =
+JSON.parse(stdout);
+
 res.json({
 
 success:true,
 
-title:"Instagram Reel",
+title:data.title,
 
-thumbnail:
-"https://images.unsplash.com/photo-1498050108023-c5249f4df085",
+thumbnail:data.thumbnail,
 
-video:
-"https://www.w3schools.com/html/mov_bbb.mp4"
+video:data.url
+
+});
+
+}catch(e){
+
+res.status(500).json({
+
+error:"Invalid response"
+
+});
+
+}
 
 });
 
