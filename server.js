@@ -1,72 +1,84 @@
 const express = require("express");
 const cors = require("cors");
-const fetch = require("node-fetch");
+const axios = require("axios");
 
 const app = express();
 
 app.use(cors());
 
-app.get("/", (req,res)=>{
-
-res.send("Nova Backend Running");
-
+app.get("/", (req, res) => {
+  res.send("Nova Backend Running");
 });
 
-app.get("/download", async(req,res)=>{
+app.get("/download", async (req, res) => {
 
-try{
+  const reelUrl = req.query.url;
 
-const url = req.query.url;
+  if (!reelUrl) {
+    return res.json({
+      success: false,
+      message: "No URL"
+    });
+  }
 
-if(!url){
+  try {
 
-return res.json({
-success:false,
-message:"No URL"
-});
+    const options = {
+      method: "GET",
+      url: "https://instagram-scraper-api2.p.rapidapi.com/v1/post_info",
+      params: {
+        code_or_id_or_url: reelUrl
+      },
+      headers: {
+        "X-RapidAPI-Key":
+        "APNI_RAPID_API_KEY_YAHA_PASTE_KARO",
 
-}
+        "X-RapidAPI-Host":
+        "instagram-scraper-api2.p.rapidapi.com"
+      }
+    };
 
-/* DEMO WORKING VIDEO */
+    const response =
+    await axios.request(options);
 
-const demoVideo =
-"https://www.w3schools.com/html/mov_bbb.mp4";
+    const reel =
+    response.data.data;
 
-const demoThumb =
-"https://images.unsplash.com/photo-1498050108023-c5249f4df085";
+    res.json({
 
-res.json({
+      success: true,
 
-success:true,
+      title:
+      reel.caption?.text ||
+      "Instagram Reel",
 
-title:"Instagram Reel",
+      thumbnail:
+      reel.thumbnail_url,
 
-thumbnail:demoThumb,
+      video:
+      reel.video_url,
 
-video:demoVideo,
+      audio:
+      reel.video_url
 
-audio:demoVideo
+    });
 
-});
+  } catch (error) {
 
-}catch(error){
+    console.log(error.response?.data || error.message);
 
-res.json({
+    res.json({
+      success: false,
+      message: "API Failed"
+    });
 
-success:false,
-message:"Server Error"
-
-});
-
-}
+  }
 
 });
 
 const PORT =
 process.env.PORT || 3000;
 
-app.listen(PORT,()=>{
-
-console.log("Server Running");
-
+app.listen(PORT, () => {
+  console.log("Server Running");
 });
