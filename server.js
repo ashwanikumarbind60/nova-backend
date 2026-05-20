@@ -60,6 +60,8 @@ app.get("/download", async (req, res) => {
     const reel =
     response.data.data;
 
+console.log(reel);
+
     res.json({
 
       success: true,
