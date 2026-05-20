@@ -45,7 +45,7 @@ app.get("/download", async (req, res) => {
       headers: {
 
         "X-RapidAPI-Key":
-        "YAHA_APNI_RAPIDAPI_KEY_PASTE_KARO",
+        "24c94668edmshc1372e2efd40e57p1e6680jsnaad2ea980ecf",
 
         "X-RapidAPI-Host":
         "instagram-scraper-api2.p.rapidapi.com"
